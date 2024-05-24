@@ -18,9 +18,12 @@ public class ConsumoApi {
             response = client
                     .send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
+            System.out.println("1");
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
+            System.out.println("2");
             throw new RuntimeException(e);
+
         }
 
         String json = response.body();
