@@ -20,20 +20,13 @@ public class LiterAluraApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println("OLA");
+
 		var consumoApi = new ConsumoApi();
-		var consumo = new ArrayList<>();
 		Scanner leitura = new Scanner(System.in);
-		List<DadosLivro> dadosLivros = new ArrayList<>();
-		List<DadosResult> dadosResult = new ArrayList<>();
+		List<DadosResponse> dadosResponse = new ArrayList<>();
 
 		//var json = consumoApi.obterDados("https://gutendex.com/books/80/");
 		//var json = consumoApi.obterDados("https://gutendex.com/books/?search=Dracula");
-		//System.out.println(json);
-
-
-		//DadosLivro dados = conversor.obterDados(json, DadosLivro.class);
-		//dadosLivros.add(dados);
 
 //		ConverteDados conversor = new ConverteDados();
 //		DadosResult dados2 = conversor.obterDados(json, DadosResult.class);
@@ -58,12 +51,12 @@ public class LiterAluraApplication implements CommandLineRunner {
 		var opcao = -1;
 		while (opcao != 0) {
 			var menu = """
+					
 					****** Escolha o número de sua Opção *****
 					1 - Busca livro por título
 					2 - Listar livros registrados
 
-					Digite a opção escolhida:
-					""";
+					Digite a opção escolhida:""";
 			System.out.println(menu);
 			opcao = leitura.nextInt();
 			leitura.nextLine();
@@ -76,19 +69,32 @@ public class LiterAluraApplication implements CommandLineRunner {
 				var json = consumoApi.obterDados("https://gutendex.com/books/?search=" + nomeLivro.replace(" ", "%20"));
 				//System.out.println(json);
 
+				DadosResponse dadosApi = conversor.obterDados(json, DadosResponse.class);
+				dadosResponse.add(dadosApi);
+				//System.out.println(dadosResponse);
 
-				DadosResult dados2 = conversor.obterDados(json, DadosResult.class);
-				dadosResult.add(dados2);
-				dadosResult.forEach(r-> r.resultado().forEach(t-> System.out.println(t.getTitle())));
-				dadosResult.forEach(r-> r.resultado().forEach(a-> a.getAuthors().forEach(n-> System.out.println(n.getName()))));
-
-				dadosResult.forEach(r-> System.out.println(r.toString()));
-				//dadosResult.forEach(r-> r.resultado().forEach(t-> System.out.println(t.getTitle())));
-				System.out.println();
-				System.out.println();
-
-
+				String primeiroElemento = extrairPrimeiroElemento(dadosApi);
+				System.out.println(primeiroElemento);
+				System.out.println("\n");
 			}
 		}
+	}
+
+
+	public static String extrairPrimeiroElemento(DadosResponse response) {
+		if (response.resultado().isEmpty()) {
+			return "Lista vazia";
+		}
+		DadosResult primeiro = response.resultado().get(0);
+		String titulo = primeiro.titulo();
+		DadosAuthor primeiroAutor = primeiro.autor().get(0);
+		String autor = primeiroAutor.nome();
+		String idioma = primeiro.linguas().get(0);
+		int downloads = primeiro.download();
+		return String.format("\n" +
+				"------------------------------------\n" +
+				"Título: %s\nAutor: %s\nIdioma: %s\nNúmero de Downloads: %d\n" +
+				"____________________________________" +
+				"", titulo, autor, idioma, downloads);
 	}
 }

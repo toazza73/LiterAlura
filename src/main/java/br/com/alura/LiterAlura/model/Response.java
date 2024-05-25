@@ -3,13 +3,17 @@ package br.com.alura.LiterAlura.model;
 import java.util.List;
 
 public class Response {
-    private int count;
-    private List<Result> results;
+   // private int count;
+    private List<DadosResult> dadosResults;
 
-    // Getters and Setters
-    public int getCount() { return count; }
-    public void setCount(int count) { this.count = count; }
+    public Response(DadosResponse dadosResponse) {
+        //this.count = dadosResponse.contador();
+        this.dadosResults = dadosResponse.resultado();
+    }
 
-    public List<Result> getResults() { return results; }
-    public void setResults(List<Result> results) { this.results = results; }
+    //    @Override
+//    public String toString() {
+//        return "count=" + getCount() +
+//                ", results=" + getResults();
+//    }
 }

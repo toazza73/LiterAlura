@@ -1,4 +1,5 @@
 package br.com.alura.LiterAlura.model;
+
 public class Author {
     private String name;
     private int birth_year;
@@ -14,10 +15,10 @@ public class Author {
     public int getDeath_year() { return death_year; }
     public void setDeath_year(int death_year) { this.death_year = death_year; }
 
-    @Override
-    public String toString() {
-        return  name + '\n' +
-                "Ano Nasc. = " + birth_year + '\n' +
-                "Ano Fal. = " + death_year;
-    }
+//    @Override
+//    public String toString() {
+//        return  name + '\n' +
+//                "Ano Nasc. = " + birth_year + '\n' +
+//                "Ano Fal. = " + death_year;
+//    }
 }
