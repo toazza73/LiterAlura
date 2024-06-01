@@ -11,9 +11,4 @@ public class Response {
         this.dadosResults = dadosResponse.resultado();
     }
 
-    //    @Override
-//    public String toString() {
-//        return "count=" + getCount() +
-//                ", results=" + getResults();
-//    }
 }
