@@ -4,13 +4,11 @@ import br.com.alura.LiterAlura.model.*;
 import br.com.alura.LiterAlura.repository.AuthorRepository;
 import br.com.alura.LiterAlura.service.ConsumoApi;
 import br.com.alura.LiterAlura.service.ConverteDados;
-import ch.qos.logback.core.encoder.JsonEscapeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
-
+import java.util.stream.Collectors;
 
 public class Principal {
 
@@ -38,65 +36,72 @@ public class Principal {
 					3 - Lista autores registrados
 					4 - Lista autores vivos em determinado ano
 					5 - Lista livros em determinado idioma
+					
+					0 - SAIR DO PROGRAMA
 
-					Digite a opção escolhida:""";
-            System.out.println(menu);
+					Digite a opção escolhida: """;
+            System.out.print(menu);
             opcao = leitura.nextInt();
             leitura.nextLine();
 
             if (opcao == 1) {
-
                 System.out.println("Digite o nome do livro");
                 var nomeLivro = leitura.nextLine();
 
                 var json = consumoApi.obterDados("https://gutendex.com/books/?search=" + nomeLivro.replace(" ", "%20"));
-                //System.out.println(json);
 
                 DadosResponse dadosApi = conversor.obterDados(json, DadosResponse.class);
                 dadosResponse.add(dadosApi);
-                //System.out.println(dadosResponse);
 
                 String primeiroElemento = extrairPrimeiroElemento(dadosApi);
                 System.out.println(primeiroElemento);
                 System.out.println("\n");
-
-
             }
-            if (opcao == 2) {
 
+            if (opcao == 2) {
                 List<Book> livrosBuscados = repositorio.buscaLivros();
-                System.out.println( "\n---------- LIVROS REGISTRADOS ----------\n");
+                System.out.println( "\n---------- LIVROS REGISTRADOS ----------");
                 livrosBuscados.forEach(System.out::println);
             }
 
             if (opcao == 3) {
-
                 List<Author> autores = repositorio.findAll();
-                //autores.forEach(b -> b.getName().forEach(System.out::println));
-                System.out.println("\n---------- AUTORES REGISTRADOS ----------\n");
+                System.out.println("\n---------- AUTORES REGISTRADOS ----------");
                 autores.forEach(System.out::println);
             }
 
             if (opcao == 4) {
+                System.out.println("Digite o ano escolhido");
+                int ano = leitura.nextInt();
 
-                //List<Author> autoresVivos = repositorio.buscaAutorAno(1900);
-                //autores.forEach(b -> b.getName().forEach(System.out::println));
-                System.out.println("\n---------- AUTORES VIVOS ----------\n");
-               // autoresVivos.forEach(System.out::println);
+                System.out.println("\n------- AUTORES VIVOS EM " + ano + " -------");
+
+                List<Author> autores = repositorio.findAll();
+                List<Author> autoresVivos = autores.stream()
+                        .filter(a -> a.getBirth_year() <= ano && a.getDeath_year()>= ano)
+                        .collect(Collectors.toList());
+
+                autoresVivos.forEach(a -> System.out.println("\nNome: " + a.getName() +
+                        "\n* " + a.getBirth_year() +
+                        "  + " + a.getDeath_year()));
+
+                if (autoresVivos.isEmpty()) {
+                    System.out.println("\nNenhum autor cadastrado estava vivo !");
+                }
             }
 
             if (opcao == 5) {
-
                 List<Book> livrosPorIdioma = repositorio.buscaLivrosIdioma("en");
-                System.out.println( "\n---------- LIVROS POR IDIOMA ----------\n");
+                System.out.println( "\n---------- LIVROS POR IDIOMA ----------");
                 livrosPorIdioma.forEach(System.out::println);
             }
+            System.out.println("-------------------------------------\n");
         }
     }
 
     public static String extrairPrimeiroElemento(DadosResponse response) {
         if (response.resultado().isEmpty()) {
-            return "Lista vazia";
+            return "A Lista está vazia";
         }
         DadosResult primeiro = response.resultado().get(0);
         String titulo = primeiro.titulo();
@@ -107,15 +112,15 @@ public class Principal {
         String idioma = primeiro.linguas().get(0);
         int downloads = primeiro.download();
 
+        // ADICIONAR BUSCA DE AUTOR NO BANCO DE DADOS PARA CADASTRAR APENAS O LIVRO
+
         Author autor = new Author(nomeAutor, nascimento, falecimento);
         repositorio.save(autor);
         Book livro = new Book(titulo, autor, idioma, downloads);
         autor.getLivros().add(livro);
         repositorio.save(autor);
 
-
-        return String.format("\n" +
-                "------------------------------------\n" +
+        return String.format("\n" + "------------------------------------\n" +
                 "Título: %s\nAutor: %s\nIdioma: %s\nNúmero de Downloads: %d\n" +
                 "____________________________________" +
                 "", titulo, nomeAutor, idioma, downloads);

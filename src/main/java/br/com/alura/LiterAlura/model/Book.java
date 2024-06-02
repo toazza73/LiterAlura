@@ -2,8 +2,6 @@ package br.com.alura.LiterAlura.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @Table(name="livros")
 public class Book {
@@ -52,9 +50,9 @@ public class Book {
 
     @Override
     public String toString() {
-        return "Titulo = " + titulo +
-                "\nAutor = " + autor.getName() +
-                "\nIdioma = " + linguas +
-                "\nNum. de downloads = " + numeroDownloads + "\n";
+        return "\nTitulo: " + titulo +
+                "\nAutor: " + autor.getName() +
+                "\nIdioma: " + linguas +
+                "\nNum. downloads: " + numeroDownloads;
     }
 }

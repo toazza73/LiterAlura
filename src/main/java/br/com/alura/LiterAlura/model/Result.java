@@ -1,5 +1,4 @@
 package br.com.alura.LiterAlura.model;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
