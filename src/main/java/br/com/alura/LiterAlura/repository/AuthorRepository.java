@@ -17,10 +17,4 @@ public interface AuthorRepository extends JpaRepository<Author, Long> {
 
     @Query("SELECT l livros FROM Author a JOIN a.livros l WHERE l.linguas ILIKE %:idiomaBuscado%")
     List<Book> buscaLivrosIdioma (String idiomaBuscado);
-
-
-//    @Query("SELECT * names FROM Author") //AND (a.death_year>=anoVivo)")
-//    List<String> buscaAutorAno (int anoVivo);
-
-
 }

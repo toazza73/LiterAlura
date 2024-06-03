@@ -148,7 +148,6 @@ public class Principal {
 
         return String.format("\n" + "------------------------------------\n" +
                 "Título: %s\nAutor: %s\nIdioma: %s\nNúmero de Downloads: %d\n" +
-                "____________________________________" +
-                "", titulo, nomeAutor, idioma, downloads);
+                "____________________________________" + "", titulo, nomeAutor, idioma, downloads);
     }
 }

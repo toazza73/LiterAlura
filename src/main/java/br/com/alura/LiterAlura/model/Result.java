@@ -38,11 +38,4 @@ public class Result {
 
     public int getDownload_count() { return download_count; }
     public void setDownload_count(int download_count) { this.download_count = download_count; }
-
-//    @Override
-//    public String toString() {
-//        return  "Título = " + title + '\n' +
-//                "Autor = " + authors + '\n' +
-//                "Idioma = " + languages;
-//    }
 }

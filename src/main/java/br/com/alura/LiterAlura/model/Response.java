@@ -10,5 +10,4 @@ public class Response {
         //this.count = dadosResponse.contador();
         this.dadosResults = dadosResponse.resultado();
     }
-
 }
