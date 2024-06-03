@@ -23,6 +23,11 @@ public class Book {
         this.linguas = linguas;
         this.numeroDownloads = numeroDownloads;
     }
+    public Book(String titulo, String linguas, int numeroDownloads) {
+        this.titulo = titulo;
+        this.linguas = linguas;
+        this.numeroDownloads = numeroDownloads;
+    }
 
     public Long getId() {
         return id;

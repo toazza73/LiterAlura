@@ -7,6 +7,7 @@ import br.com.alura.LiterAlura.service.ConverteDados;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -62,20 +63,24 @@ public class Principal {
                 List<Book> livrosBuscados = repositorio.buscaLivros();
                 System.out.println( "\n---------- LIVROS REGISTRADOS ----------");
                 livrosBuscados.forEach(System.out::println);
+                if (livrosBuscados.isEmpty()) {
+                    System.out.println("\nNenhum livro foi registrado ainda !");
+                }
             }
 
             if (opcao == 3) {
                 List<Author> autores = repositorio.findAll();
                 System.out.println("\n---------- AUTORES REGISTRADOS ----------");
                 autores.forEach(System.out::println);
+                if (autores.isEmpty()) {
+                    System.out.println("\nNenhum autor foi registrado ainda !");
+                }
             }
 
             if (opcao == 4) {
                 System.out.println("Digite o ano escolhido");
                 int ano = leitura.nextInt();
-
                 System.out.println("\n------- AUTORES VIVOS EM " + ano + " -------");
-
                 List<Author> autores = repositorio.findAll();
                 List<Author> autoresVivos = autores.stream()
                         .filter(a -> a.getBirth_year() <= ano && a.getDeath_year()>= ano)
@@ -91,17 +96,30 @@ public class Principal {
             }
 
             if (opcao == 5) {
-                List<Book> livrosPorIdioma = repositorio.buscaLivrosIdioma("en");
+                var opcaoIdioma = """
+                        \nDigite o idioma escolhido conforme abaixo:
+                        pt - Português
+                        es - Espanhol
+                        en - Inglês
+                        fr - Francês
+                        de - Alemão
+                        """;
+                System.out.print(opcaoIdioma);
+                var idiomaLivro = leitura.nextLine();
+                List<Book> livrosPorIdioma = repositorio.buscaLivrosIdioma(idiomaLivro);
                 System.out.println( "\n---------- LIVROS POR IDIOMA ----------");
+                if (livrosPorIdioma.isEmpty()) {
+                    System.out.println("Nenhum livro cadastrado neste idioma !");
+                }
                 livrosPorIdioma.forEach(System.out::println);
             }
-            System.out.println("-------------------------------------\n");
+            System.out.println("---------------------------------------\n");
         }
     }
 
     public static String extrairPrimeiroElemento(DadosResponse response) {
         if (response.resultado().isEmpty()) {
-            return "A Lista está vazia";
+            return "O livro não está no Gutendex !";
         }
         DadosResult primeiro = response.resultado().get(0);
         String titulo = primeiro.titulo();
@@ -112,13 +130,21 @@ public class Principal {
         String idioma = primeiro.linguas().get(0);
         int downloads = primeiro.download();
 
-        // ADICIONAR BUSCA DE AUTOR NO BANCO DE DADOS PARA CADASTRAR APENAS O LIVRO
+        Optional<Author> autores = repositorio.findByNameContainingIgnoreCase(nomeAutor);
+       if (autores.isPresent()) {
+            Book livro = new Book(titulo, idioma, downloads);
+            livro.setAutor(autores.get());
+            autores.get().getLivros().add(livro);
+            repositorio.save(autores.get());
+        }
 
-        Author autor = new Author(nomeAutor, nascimento, falecimento);
-        repositorio.save(autor);
-        Book livro = new Book(titulo, autor, idioma, downloads);
-        autor.getLivros().add(livro);
-        repositorio.save(autor);
+        else{
+            Author autor = new Author(nomeAutor, nascimento, falecimento);
+            repositorio.save(autor);
+            Book livro = new Book(titulo, autor, idioma, downloads);
+            autor.getLivros().add(livro);
+            repositorio.save(autor);
+        }
 
         return String.format("\n" + "------------------------------------\n" +
                 "Título: %s\nAutor: %s\nIdioma: %s\nNúmero de Downloads: %d\n" +
